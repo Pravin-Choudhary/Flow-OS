@@ -1,0 +1,11 @@
+const icons = require('@hugeicons/core-free-icons');
+const keys = Object.keys(icons);
+console.log('Total icons:', keys.length);
+console.log('Sample icons:', keys.slice(0, 50));
+console.log('Sparkles/Star/AI icons:', keys.filter(k => k.includes('Spark') || k.includes('Star') || k.includes('Magic') || k.includes('Ai')));
+console.log('Eye/View icons:', keys.filter(k => k.includes('Eye') || k.includes('View')));
+console.log('Mail/Email icons:', keys.filter(k => k.includes('Mail') || k.includes('Email')));
+console.log('Computer/Monitor icons:', keys.filter(k => k.includes('Computer') || k.includes('Monitor') || k.includes('Dashboard') || k.includes('Alert')));
+console.log('Google icons:', keys.filter(k => k.includes('Google')));
+console.log('Flash/Bolt icons:', keys.filter(k => k.includes('Flash') || k.includes('Bolt') || k.includes('Lightning') || k.includes('Energy')));
+console.log('Chat/Copilot icons:', keys.filter(k => k.includes('Chat') || k.includes('Bubble') || k.includes('Comment')));
