@@ -44,7 +44,6 @@ const connections: Connection[] = [
 
 function getPathD(from: Node, to: Node): string {
     const dx = to.x - from.x
-    const dy = to.y - from.y
     const controlX1 = from.x + dx * 0.5
     const controlY1 = from.y
     const controlX2 = from.x + dx * 0.5
@@ -93,7 +92,6 @@ export function FlowOrchestrator() {
         const toNode = nodes.find((n) => n.id === connection.to)!
         const t = progress
         const dx = toNode.x - fromNode.x
-        const dy = toNode.y - fromNode.y
         const cx1 = fromNode.x + dx * 0.5
         const cy1 = fromNode.y
         const cx2 = fromNode.x + dx * 0.5

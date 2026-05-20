@@ -22,7 +22,6 @@ export function ThemeProvider({
   children,
   defaultTheme = "system",
   storageKey = "flow-os-theme",
-  ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== "undefined") {

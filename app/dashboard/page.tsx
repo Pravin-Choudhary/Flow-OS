@@ -21,6 +21,8 @@ import { DashboardNavProvider, useDashboardNav } from "@/components/dasboard/das
 import { KanbanBoardView } from "@/components/kanban/kanban-board"
 
 import { BacklogView } from "@/components/backlog/backlog-view"
+import { MembersView } from "@/components/members/members-view"
+import { AnalyticsView } from "@/components/analytics/analytics-view"
 
 // ─── Inner content that consumes the nav context ───
 function DashboardPageInner() {
@@ -31,7 +33,11 @@ function DashboardPageInner() {
             ? "Board"
             : activeView === "backlog"
                 ? "Backlog"
-                : "Dashboard"
+                : activeView === "members"
+                    ? "Members"
+                    : activeView === "analytics"
+                        ? "Analytics"
+                        : "Dashboard"
 
     return (
         <SidebarProvider>
@@ -64,6 +70,10 @@ function DashboardPageInner() {
                         <KanbanBoardView key={activeProjectId} projectId={activeProjectId} />
                     ) : activeView === "backlog" ? (
                         <BacklogView key={activeProjectId} projectId={activeProjectId} />
+                    ) : activeView === "members" ? (
+                        <MembersView key={activeProjectId} projectId={activeProjectId} />
+                    ) : activeView === "analytics" ? (
+                        <AnalyticsView key={activeProjectId} projectId={activeProjectId} />
                     ) : (
                         <DashboardContent />
                     )}

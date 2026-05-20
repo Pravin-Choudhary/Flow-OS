@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from "react"
 
-export type ActiveView = "dashboard" | "board" | "backlog"
+export type ActiveView = "dashboard" | "board" | "backlog" | "members" | "analytics"
 
 interface DashboardNavContextType {
     activeView: ActiveView
@@ -11,6 +11,8 @@ interface DashboardNavContextType {
     setActiveProjectId: (id: string) => void
     navigateToBoard: (projectId: string) => void
     navigateToBacklog: (projectId: string) => void
+    navigateToMembers: (projectId: string) => void
+    navigateToAnalytics: (projectId: string) => void
 }
 
 const DashboardNavContext = createContext<DashboardNavContextType>({
@@ -20,6 +22,8 @@ const DashboardNavContext = createContext<DashboardNavContextType>({
     setActiveProjectId: () => {},
     navigateToBoard: () => {},
     navigateToBacklog: () => {},
+    navigateToMembers: () => {},
+    navigateToAnalytics: () => {},
 })
 
 export function DashboardNavProvider({ children }: { children: ReactNode }) {
@@ -36,6 +40,16 @@ export function DashboardNavProvider({ children }: { children: ReactNode }) {
         setActiveView("backlog")
     }
 
+    const navigateToMembers = (projectId: string) => {
+        setActiveProjectId(projectId)
+        setActiveView("members")
+    }
+
+    const navigateToAnalytics = (projectId: string) => {
+        setActiveProjectId(projectId)
+        setActiveView("analytics")
+    }
+
     return (
         <DashboardNavContext.Provider
             value={{
@@ -45,6 +59,8 @@ export function DashboardNavProvider({ children }: { children: ReactNode }) {
                 setActiveProjectId,
                 navigateToBoard,
                 navigateToBacklog,
+                navigateToMembers,
+                navigateToAnalytics,
             }}
         >
             {children}

@@ -12,7 +12,6 @@ import {
     ListTodo,
     Timer,
     UserCircle,
-    LineChart,
 } from "lucide-react"
 
 import { NavMain } from "./nav-main"
@@ -57,11 +56,6 @@ const data = {
             icon: Users,
         },
         {
-            title: "Analytics",
-            url: "#",
-            icon: LineChart,
-        },
-        {
             title: "Settings",
             url: "#",
             icon: Settings,
@@ -78,8 +72,8 @@ const data = {
                 { title: "Board", url: "#", icon: Kanban, isActive: false, viewType: "board" as const },
                 { title: "Backlog", url: "#", icon: ListTodo, isActive: false, viewType: "backlog" as const },
                 { title: "Sprints", url: "#", icon: Timer },
-                { title: "Members", url: "#", icon: UserCircle },
-                { title: "Analytics", url: "#", icon: BarChart3 },
+                { title: "Members", url: "#", icon: UserCircle, viewType: "members" as const },
+                { title: "Analytics", url: "#", icon: BarChart3, viewType: "analytics" as const },
             ],
         },
         {
@@ -92,8 +86,8 @@ const data = {
                 { title: "Board", url: "#", icon: Kanban, isActive: false, viewType: "board" as const },
                 { title: "Backlog", url: "#", icon: ListTodo, isActive: false, viewType: "backlog" as const },
                 { title: "Sprints", url: "#", icon: Timer },
-                { title: "Members", url: "#", icon: UserCircle },
-                { title: "Analytics", url: "#", icon: BarChart3 },
+                { title: "Members", url: "#", icon: UserCircle, viewType: "members" as const },
+                { title: "Analytics", url: "#", icon: BarChart3, viewType: "analytics" as const },
             ],
         },
         {
@@ -106,8 +100,8 @@ const data = {
                 { title: "Board", url: "#", icon: Kanban, isActive: false, viewType: "board" as const },
                 { title: "Backlog", url: "#", icon: ListTodo, isActive: false, viewType: "backlog" as const },
                 { title: "Sprints", url: "#", icon: Timer },
-                { title: "Members", url: "#", icon: UserCircle },
-                { title: "Analytics", url: "#", icon: BarChart3 },
+                { title: "Members", url: "#", icon: UserCircle, viewType: "members" as const },
+                { title: "Analytics", url: "#", icon: BarChart3, viewType: "analytics" as const },
             ],
         },
     ],

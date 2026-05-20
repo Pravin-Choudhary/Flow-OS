@@ -1,7 +1,6 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { KanbanItem, KanbanItemHandle } from "@/components/reui/kanban"
 import type { KanbanTask, TaskPriority } from "./kanban-data"

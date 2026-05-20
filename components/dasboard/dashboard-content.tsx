@@ -3,34 +3,20 @@
 import * as React from "react"
 import { useState } from "react"
 import {
-    Activity,
-    AlertTriangle,
-    ArrowRight,
     ArrowUpRight,
     ArrowDownRight,
-    CheckCircle2,
     Filter,
     MoreHorizontal,
     Plus,
     TrendingUp,
-    Users,
-    Zap,
     ChevronRight,
     BarChart3,
     LineChart as LineChartIcon,
     AreaChart as AreaChartIcon,
     RefreshCw,
-    Clock,
-    Laptop,
-    Smartphone,
-    LayoutGrid,
-    Palette,
-    Calendar,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import {
@@ -43,8 +29,6 @@ import {
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent,
-    ChartLegend,
-    ChartLegendContent,
     type ChartConfig,
 } from "@/components/ui/chart"
 import {
@@ -130,13 +114,16 @@ const productivityConfig = {
 // ─── Project Timeline & List Data ───
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"]
 
-interface TimelineMember {
+export interface TimelineMember {
     name: string
     task: string
     start: string
     end: string
     color: string
     dateRange: string
+    designation: string
+    bio: string
+    avatarUrl?: string
 }
 
 interface ProjectData {
@@ -149,7 +136,7 @@ interface ProjectData {
     members: TimelineMember[]
 }
 
-const projectsData: ProjectData[] = [
+export const projectsData: ProjectData[] = [
     {
         id: "ecommerce",
         name: "E-Commerce",
@@ -158,11 +145,56 @@ const projectsData: ProjectData[] = [
         ongoingCount: "4 ongoing projects",
         colorClass: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30",
         members: [
-            { name: "Caleb", task: "UI Design", start: "Jan", end: "May", color: "bg-emerald-600/90 dark:bg-emerald-500/90 text-white border-emerald-400/20", dateRange: "Jan 1 - May 15" },
-            { name: "Shaw", task: "UX Design", start: "Mar", end: "Jun", color: "bg-amber-500/90 dark:bg-amber-500/90 text-white border-amber-400/20", dateRange: "Mar 1 - Jun 15" },
-            { name: "Jane", task: "Music Integration", start: "Mar", end: "Jul", color: "bg-[#1e3a5f] text-[#a5f3fc] border border-cyan-850/20 dark:border-cyan-800/20", dateRange: "Mar 15 - Jul 10" },
-            { name: "Blake", task: "Animation", start: "Feb", end: "Jul", color: "bg-zinc-950 dark:bg-zinc-800 text-white border-zinc-800", dateRange: "Feb 10 - Jul 20" },
-            { name: "Quinn", task: "Prototyping", start: "Mar", end: "Aug", color: "bg-orange-600/90 text-white border-orange-500/20", dateRange: "Mar 20 - Aug 5" },
+            {
+                name: "Caleb",
+                task: "UI Design",
+                start: "Jan",
+                end: "May",
+                color: "bg-emerald-600/90 dark:bg-emerald-500/90 text-white border-emerald-400/20",
+                dateRange: "Jan 1 - May 15",
+                designation: "Lead UI Engineer",
+                bio: "Crafts premium UI architectures and modular component libraries with focus on interactive design systems."
+            },
+            {
+                name: "Shaw",
+                task: "UX Design",
+                start: "Mar",
+                end: "Jun",
+                color: "bg-amber-500/90 dark:bg-amber-500/90 text-white border-amber-400/20",
+                dateRange: "Mar 1 - Jun 15",
+                designation: "Senior UX Designer",
+                bio: "Transforms user insights into seamless layout flows, focusing on visual hierarchy and interaction models."
+            },
+            {
+                name: "Jane",
+                task: "Music Integration",
+                start: "Mar",
+                end: "Jul",
+                color: "bg-[#1e3a5f] text-[#a5f3fc] border border-cyan-850/20 dark:border-cyan-800/20",
+                dateRange: "Mar 15 - Jul 10",
+                designation: "Audio UX Engineer",
+                bio: "Fuses soundscapes with web interfaces, building custom audio visualizers and immersive sonic feedback."
+            },
+            {
+                name: "Blake",
+                task: "Animation",
+                start: "Feb",
+                end: "Jul",
+                color: "bg-zinc-950 dark:bg-zinc-800 text-white border-zinc-800",
+                dateRange: "Feb 10 - Jul 20",
+                designation: "Creative Technologist",
+                bio: "Specializes in high-performance WebGL, SVG, and framer-motion micro-animations that enrich UX."
+            },
+            {
+                name: "Quinn",
+                task: "Prototyping",
+                start: "Mar",
+                end: "Aug",
+                color: "bg-orange-600/90 text-white border-orange-500/20",
+                dateRange: "Mar 20 - Aug 5",
+                designation: "Principal Prototype Builder",
+                bio: "Bridges the design-to-code gap using responsive react templates and production-ready storybooks."
+            },
         ]
     },
     {
@@ -173,11 +205,56 @@ const projectsData: ProjectData[] = [
         ongoingCount: "3 ongoing projects",
         colorClass: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30",
         members: [
-            { name: "Alex", task: "Frontend Arch", start: "Jan", end: "Apr", color: "bg-orange-600/90 text-white border-orange-500/20", dateRange: "Jan 5 - Apr 12" },
-            { name: "Jordan", task: "Dashboard Dev", start: "Feb", end: "Jun", color: "bg-emerald-600/90 dark:bg-emerald-500/90 text-white border-emerald-400/20", dateRange: "Feb 15 - Jun 10" },
-            { name: "Taylor", task: "API Routing", start: "Apr", end: "Jul", color: "bg-[#1e3a5f] text-[#a5f3fc] border border-cyan-850/20 dark:border-cyan-800/20", dateRange: "Apr 20 - Jul 15" },
-            { name: "Morgan", task: "Layout CSS", start: "Mar", end: "May", color: "bg-amber-500/90 text-white border-amber-400/20", dateRange: "Mar 5 - May 25" },
-            { name: "Casey", task: "Tests & Deploy", start: "May", end: "Aug", color: "bg-zinc-950 dark:bg-zinc-800 text-white border-zinc-800", dateRange: "May 10 - Aug 12" },
+            {
+                name: "Alex",
+                task: "Frontend Arch",
+                start: "Jan",
+                end: "Apr",
+                color: "bg-orange-600/90 text-white border-orange-500/20",
+                dateRange: "Jan 5 - Apr 12",
+                designation: "Principal Mobile Architect",
+                bio: "Designs React Native frameworks and state sync patterns for lightning-fast mobile performance."
+            },
+            {
+                name: "Jordan",
+                task: "Dashboard Dev",
+                start: "Feb",
+                end: "Jun",
+                color: "bg-emerald-600/90 dark:bg-emerald-500/90 text-white border-emerald-400/20",
+                dateRange: "Feb 15 - Jun 10",
+                designation: "Senior Frontend Engineer",
+                bio: "Passionate about dashboard layout architecture, SVG charts, and interactive analytical graphs."
+            },
+            {
+                name: "Taylor",
+                task: "API Routing",
+                start: "Apr",
+                end: "Jul",
+                color: "bg-[#1e3a5f] text-[#a5f3fc] border border-cyan-850/20 dark:border-cyan-800/20",
+                dateRange: "Apr 20 - Jul 15",
+                designation: "Lead Systems Integrator",
+                bio: "Architects scalable real-time WebSocket pipelines and type-safe serverless GraphQL routers."
+            },
+            {
+                name: "Morgan",
+                task: "Layout CSS",
+                start: "Mar",
+                end: "May",
+                color: "bg-amber-500/90 text-white border-amber-400/20",
+                dateRange: "Mar 5 - May 25",
+                designation: "CSS & Layout Engineer",
+                bio: "Crafts modular fluid grids and pixel-perfect animations ensuring responsiveness on all viewports."
+            },
+            {
+                name: "Casey",
+                task: "Tests & Deploy",
+                start: "May",
+                end: "Aug",
+                color: "bg-zinc-950 dark:bg-zinc-800 text-white border-zinc-800",
+                dateRange: "May 10 - Aug 12",
+                designation: "DevOps Tech Lead",
+                bio: "Designs automated unit testing frameworks and seamless Docker container deployment scripts."
+            },
         ]
     },
     {
@@ -188,11 +265,56 @@ const projectsData: ProjectData[] = [
         ongoingCount: "2 ongoing projects",
         colorClass: "text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/30",
         members: [
-            { name: "Riley", task: "Brand Guidelines", start: "Feb", end: "May", color: "bg-[#1e3a5f] text-[#a5f3fc] border border-cyan-850/20 dark:border-cyan-800/20", dateRange: "Feb 1 - May 5" },
-            { name: "Skyler", task: "Asset Creation", start: "Mar", end: "Jun", color: "bg-emerald-600/90 dark:bg-emerald-500/90 text-white border-emerald-400/20", dateRange: "Mar 10 - Jun 18" },
-            { name: "Jamie", task: "Theme Engine", start: "May", end: "Aug", color: "bg-amber-500/90 text-white border-amber-400/20", dateRange: "May 15 - Aug 20" },
-            { name: "Reese", task: "Copywriting", start: "Apr", end: "Jul", color: "bg-orange-600/90 text-white border-orange-500/20", dateRange: "Apr 5 - Jul 25" },
-            { name: "Pat", task: "QA Sandbox", start: "Jun", end: "Aug", color: "bg-zinc-950 dark:bg-zinc-800 text-white border-zinc-800", dateRange: "Jun 1 - Aug 28" },
+            {
+                name: "Riley",
+                task: "Brand Guidelines",
+                start: "Feb",
+                end: "May",
+                color: "bg-[#1e3a5f] text-[#a5f3fc] border border-cyan-850/20 dark:border-cyan-800/20",
+                dateRange: "Feb 1 - May 5",
+                designation: "Senior Brand Designer",
+                bio: "Establishes typographic hierarchies, vector logo systems, and visual style guidelines."
+            },
+            {
+                name: "Skyler",
+                task: "Asset Creation",
+                start: "Mar",
+                end: "Jun",
+                color: "bg-emerald-600/90 dark:bg-emerald-500/90 text-white border-emerald-400/20",
+                dateRange: "Mar 10 - Jun 18",
+                designation: "Lead Vector Artist",
+                bio: "Creates custom illustrative design libraries, graphic sets, and bespoke icons."
+            },
+            {
+                name: "Jamie",
+                task: "Theme Engine",
+                start: "May",
+                end: "Aug",
+                color: "bg-amber-500/90 text-white border-amber-400/20",
+                dateRange: "May 15 - Aug 20",
+                designation: "Senior UI Framework Developer",
+                bio: "Constructs CSS theme providers, design token compiler pipelines, and dynamic dark mode toggles."
+            },
+            {
+                name: "Reese",
+                task: "Copywriting",
+                start: "Apr",
+                end: "Jul",
+                color: "bg-orange-600/90 text-white border-orange-500/20",
+                dateRange: "Apr 5 - Jul 25",
+                designation: "UX Copywriter & Strategist",
+                bio: "Shapes application microcopy, notifications, and technical product documentation."
+            },
+            {
+                name: "Pat",
+                task: "QA Sandbox",
+                start: "Jun",
+                end: "Aug",
+                color: "bg-zinc-950 dark:bg-zinc-800 text-white border-zinc-800",
+                dateRange: "Jun 1 - Aug 28",
+                designation: "UI Test Suite Specialist",
+                bio: "Implements visual regression tooling, cypress automated checks, and sandbox playgrounds."
+            },
         ]
     }
 ]
@@ -262,53 +384,28 @@ const teamPerformance = [
 ]
 
 // ─── Task Data ───
-const tasks = [
-    {
-        id: 1,
-        title: "AI task decomposition endpoint",
-        priority: "High",
-        status: "in-progress",
-    },
-    {
-        id: 2,
-        title: "Sprint summary streaming",
-        priority: "Med",
-        status: "todo",
-    },
-    {
-        id: 3,
-        title: "Fix payment timeout bug",
-        priority: "Urgent",
-        status: "todo",
-    },
-]
+// Removed unused tasks array
 
 // ─── Activity Data ───
-const activities = [
-    {
-        id: 1,
-        user: "PR",
-        name: "Priya",
-        action: "moved FLW-042 to In Review",
-        time: "12 min ago",
-    },
-    {
-        id: 2,
-        user: "DM",
-        name: "Dev",
-        action: "created 3 subtasks via AI decompose",
-        time: "34 min ago",
-    },
-    {
-        id: 3,
-        user: "SK",
-        name: "Sara",
-        action: "closed FLW-040 — JWT refresh done",
-        time: "1 hr ago",
-    },
-]
+// Removed unused activities array
 
 type ChartType = "bar" | "line" | "area"
+
+export function getMemberGradient(name: string) {
+    const gradients = [
+        "from-emerald-400 to-teal-600 text-white",
+        "from-violet-400 to-indigo-650 text-white",
+        "from-blue-400 to-cyan-600 text-white",
+        "from-orange-400 to-rose-600 text-white",
+        "from-amber-400 to-yellow-600 text-white",
+    ]
+    let hash = 0
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash)
+    }
+    const index = Math.abs(hash) % gradients.length
+    return gradients[index]
+}
 
 export function DashboardContent() {
     const [chartType, setChartType] = useState<ChartType>("bar")
@@ -332,18 +429,7 @@ export function DashboardContent() {
         return `${startIdx} / ${endIdx}`
     }
 
-    const getProjectIcon = (id: string, className: string) => {
-        switch (id) {
-            case "ecommerce":
-                return <Smartphone className={className} />
-            case "mobile":
-                return <Laptop className={className} />
-            case "design":
-                return <Palette className={className} />
-            default:
-                return <LayoutGrid className={className} />
-        }
-    }
+    // Removed unused getProjectIcon function
 
     const chartButtons: { type: ChartType; icon: React.ReactNode; label: string }[] = [
         { type: "bar", icon: <BarChart3 className="size-3.5" />, label: "Bar" },

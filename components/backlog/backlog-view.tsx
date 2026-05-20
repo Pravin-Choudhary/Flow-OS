@@ -21,20 +21,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Progress } from "@/components/ui/progress"
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
     Filter,
     Plus,
-    ArrowRight,
     ArrowLeft,
     Calendar,
     Trash2,
     MessageSquare,
-    Check,
     X,
     ChevronDown,
     PlusCircle,
@@ -139,7 +131,8 @@ export function BacklogView({ projectId }: BacklogViewProps) {
     const handleUpdateTaskField = (taskId: string, field: keyof BacklogTask, value: string | number) => {
         const updatedTasks = tasks.map((t) => {
             if (t.id === taskId) {
-                return { ...t, [field]: value as any }
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return { ...t, [field]: value as any }
             }
             return t
         })

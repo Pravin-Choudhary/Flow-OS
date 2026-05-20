@@ -32,7 +32,7 @@ interface Project {
         url: string
         icon: LucideIcon
         isActive?: boolean
-        viewType?: "board" | "backlog" | "default"
+        viewType?: "board" | "backlog" | "members" | "analytics" | "default"
     }[]
 }
 
@@ -42,7 +42,7 @@ export function NavProjects({
     projects: Project[]
 }) {
     const [projects, setProjects] = useState(initialProjects)
-    const { navigateToBoard, navigateToBacklog, activeView, activeProjectId } = useDashboardNav()
+    const { navigateToBoard, navigateToBacklog, navigateToMembers, navigateToAnalytics, activeView, activeProjectId } = useDashboardNav()
 
     const toggleProject = (index: number) => {
         setProjects((prev) =>
@@ -81,9 +81,13 @@ export function NavProjects({
                                         project.items.map((item) => {
                                             const isBoardItem = item.viewType === "board"
                                             const isBacklogItem = item.viewType === "backlog"
+                                            const isMembersItem = item.viewType === "members"
+                                            const isAnalyticsItem = item.viewType === "analytics"
                                             const isActiveItem =
                                                 (isBoardItem && activeView === "board" && activeProjectId === project.projectId) ||
-                                                (isBacklogItem && activeView === "backlog" && activeProjectId === project.projectId)
+                                                (isBacklogItem && activeView === "backlog" && activeProjectId === project.projectId) ||
+                                                (isMembersItem && activeView === "members" && activeProjectId === project.projectId) ||
+                                                (isAnalyticsItem && activeView === "analytics" && activeProjectId === project.projectId)
 
                                             return (
                                                 <SidebarMenuSubItem key={item.title}>
@@ -100,6 +104,10 @@ export function NavProjects({
                                                                         navigateToBoard(project.projectId)
                                                                     } else if (isBacklogItem) {
                                                                         navigateToBacklog(project.projectId)
+                                                                    } else if (isMembersItem) {
+                                                                        navigateToMembers(project.projectId)
+                                                                    } else if (isAnalyticsItem) {
+                                                                        navigateToAnalytics(project.projectId)
                                                                     }
                                                                 }}
                                                             >
