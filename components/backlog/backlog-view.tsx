@@ -13,6 +13,7 @@ import {
     Drawer,
     DrawerContent,
     DrawerClose,
+    DrawerTitle,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -285,6 +286,7 @@ export function BacklogView({ projectId }: BacklogViewProps) {
             <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen} direction="right">
                 {selectedTask && (
                     <DrawerContent className="data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-[95vw] data-[vaul-drawer-direction=right]:sm:max-w-[1000px] border-l border-border p-0 flex flex-row h-full bg-background rounded-l-2xl overflow-hidden before:hidden">
+                        <DrawerTitle className="sr-only">Task Details</DrawerTitle>
                         
                         {/* Close Button */}
                         <DrawerClose className="absolute top-6 right-6 z-50 rounded-full p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 transition-colors">
