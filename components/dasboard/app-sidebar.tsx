@@ -3,17 +3,11 @@
 import * as React from "react"
 import {
     LayoutDashboard,
-    Sparkles,
     Bell,
     Zap,
-    Palette,
-    Globe,
-    Plus,
     BarChart3,
     Users,
     Settings,
-    ChevronRight,
-    Folder,
     Kanban,
     ListTodo,
     Timer,
@@ -32,7 +26,6 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    useSidebar,
 } from "@/components/ui/sidebar"
 
 const data = {
@@ -48,6 +41,7 @@ const data = {
             url: "#",
             icon: LayoutDashboard,
             isActive: true,
+            navAction: "dashboard" as const,
         },
         {
             title: "Notifications",
@@ -79,9 +73,10 @@ const data = {
             url: "#",
             color: "bg-emerald-500",
             isExpanded: true,
+            projectId: "ecommerce",
             items: [
-                { title: "Board", url: "#", icon: Kanban, isActive: true },
-                { title: "Backlog", url: "#", icon: ListTodo },
+                { title: "Board", url: "#", icon: Kanban, isActive: false, viewType: "board" as const },
+                { title: "Backlog", url: "#", icon: ListTodo, isActive: false, viewType: "backlog" as const },
                 { title: "Sprints", url: "#", icon: Timer },
                 { title: "Members", url: "#", icon: UserCircle },
                 { title: "Analytics", url: "#", icon: BarChart3 },
@@ -92,14 +87,28 @@ const data = {
             url: "#",
             color: "bg-blue-500",
             isExpanded: false,
-            items: [],
+            projectId: "mobile",
+            items: [
+                { title: "Board", url: "#", icon: Kanban, isActive: false, viewType: "board" as const },
+                { title: "Backlog", url: "#", icon: ListTodo, isActive: false, viewType: "backlog" as const },
+                { title: "Sprints", url: "#", icon: Timer },
+                { title: "Members", url: "#", icon: UserCircle },
+                { title: "Analytics", url: "#", icon: BarChart3 },
+            ],
         },
         {
             name: "Design System",
             url: "#",
             color: "bg-violet-500",
             isExpanded: false,
-            items: [],
+            projectId: "design",
+            items: [
+                { title: "Board", url: "#", icon: Kanban, isActive: false, viewType: "board" as const },
+                { title: "Backlog", url: "#", icon: ListTodo, isActive: false, viewType: "backlog" as const },
+                { title: "Sprints", url: "#", icon: Timer },
+                { title: "Members", url: "#", icon: UserCircle },
+                { title: "Analytics", url: "#", icon: BarChart3 },
+            ],
         },
     ],
 }

@@ -17,8 +17,22 @@ import {
 } from "@/components/ui/sidebar"
 import { DashboardContent } from "@/components/dasboard/dashboard-content"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { DashboardNavProvider, useDashboardNav } from "@/components/dasboard/dashboard-nav-context"
+import { KanbanBoardView } from "@/components/kanban/kanban-board"
 
-export default function DashboardPage() {
+import { BacklogView } from "@/components/backlog/backlog-view"
+
+// ─── Inner content that consumes the nav context ───
+function DashboardPageInner() {
+    const { activeView, activeProjectId } = useDashboardNav()
+
+    const breadcrumbPage =
+        activeView === "board"
+            ? "Board"
+            : activeView === "backlog"
+                ? "Backlog"
+                : "Dashboard"
+
     return (
         <SidebarProvider>
             <AppSidebar />
@@ -34,7 +48,7 @@ export default function DashboardPage() {
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator className="hidden md:block" />
                                 <BreadcrumbItem>
-                                    <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                                    <BreadcrumbPage>{breadcrumbPage}</BreadcrumbPage>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
@@ -43,8 +57,27 @@ export default function DashboardPage() {
                         <ThemeToggle />
                     </div>
                 </header>
-                <DashboardContent />
+
+                <main className="flex-1 overflow-auto">
+                    {activeView === "board" ? (
+                        // Key ensures the board resets drag state when switching projects
+                        <KanbanBoardView key={activeProjectId} projectId={activeProjectId} />
+                    ) : activeView === "backlog" ? (
+                        <BacklogView key={activeProjectId} projectId={activeProjectId} />
+                    ) : (
+                        <DashboardContent />
+                    )}
+                </main>
             </SidebarInset>
         </SidebarProvider>
+    )
+}
+
+// ─── Page root — wraps everything in the context provider ───
+export default function DashboardPage() {
+    return (
+        <DashboardNavProvider>
+            <DashboardPageInner />
+        </DashboardNavProvider>
     )
 }

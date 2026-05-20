@@ -358,7 +358,7 @@ export function DashboardContent() {
                 <div>
                     <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
                     <p className="text-sm text-muted-foreground mt-1">
-                        Track your team's progress and sprint health.
+                        Track your team&apos;s progress and sprint health.
                     </p>
                 </div>
                 <div className="flex items-center gap-2">

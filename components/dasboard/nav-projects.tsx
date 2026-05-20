@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ChevronRight, Folder, Plus, MoreHorizontal, type LucideIcon } from "lucide-react"
+import { ChevronRight, Plus, type LucideIcon } from "lucide-react"
 
 import {
     Collapsible,
@@ -17,26 +17,22 @@ import {
     SidebarMenuSub,
     SidebarMenuSubButton,
     SidebarMenuSubItem,
-    SidebarMenuAction,
 } from "@/components/ui/sidebar"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { useDashboardNav } from "./dashboard-nav-context"
+import { cn } from "@/lib/utils"
 
 interface Project {
     name: string
     url: string
     color: string
     isExpanded: boolean
+    projectId: string
     items: {
         title: string
         url: string
         icon: LucideIcon
         isActive?: boolean
+        viewType?: "board" | "backlog" | "default"
     }[]
 }
 
@@ -46,6 +42,7 @@ export function NavProjects({
     projects: Project[]
 }) {
     const [projects, setProjects] = useState(initialProjects)
+    const { navigateToBoard, navigateToBacklog, activeView, activeProjectId } = useDashboardNav()
 
     const toggleProject = (index: number) => {
         setProjects((prev) =>
@@ -70,7 +67,7 @@ export function NavProjects({
                                 render={
                                     <SidebarMenuButton className="w-full justify-between hover:bg-sidebar-accent/50 group/collapsible">
                                         <div className="flex items-center gap-2.5">
-                                            {/* Colored dot — NEVER white */}
+                                            {/* Colored dot */}
                                             <span className={`size-2.5 rounded-full shrink-0 ${project.color}`} />
                                             <span className="font-medium text-sm truncate">{project.name}</span>
                                         </div>
@@ -81,19 +78,39 @@ export function NavProjects({
                             <CollapsibleContent>
                                 <SidebarMenuSub className="border-l border-zinc-200 dark:border-zinc-800 ml-3.5 pl-2.5 gap-0.5 mt-0.5">
                                     {project.items.length > 0 ? (
-                                        project.items.map((item) => (
-                                            <SidebarMenuSubItem key={item.title}>
-                                                <SidebarMenuSubButton
-                                                    isActive={item.isActive}
-                                                    render={
-                                                        <a href={item.url} className="flex items-center gap-2">
-                                                            <item.icon className="size-3.5 text-muted-foreground/80" />
-                                                            <span>{item.title}</span>
-                                                        </a>
-                                                    }
-                                                />
-                                            </SidebarMenuSubItem>
-                                        ))
+                                        project.items.map((item) => {
+                                            const isBoardItem = item.viewType === "board"
+                                            const isBacklogItem = item.viewType === "backlog"
+                                            const isActiveItem =
+                                                (isBoardItem && activeView === "board" && activeProjectId === project.projectId) ||
+                                                (isBacklogItem && activeView === "backlog" && activeProjectId === project.projectId)
+
+                                            return (
+                                                <SidebarMenuSubItem key={item.title}>
+                                                    <SidebarMenuSubButton
+                                                        isActive={isActiveItem || item.isActive}
+                                                        render={
+                                                            <button
+                                                                className={cn(
+                                                                    "flex items-center gap-2 w-full text-left",
+                                                                    isActiveItem && "text-foreground font-medium"
+                                                                )}
+                                                                onClick={() => {
+                                                                    if (isBoardItem) {
+                                                                        navigateToBoard(project.projectId)
+                                                                    } else if (isBacklogItem) {
+                                                                        navigateToBacklog(project.projectId)
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <item.icon className="size-3.5 text-muted-foreground/80" />
+                                                                <span>{item.title}</span>
+                                                            </button>
+                                                        }
+                                                    />
+                                                </SidebarMenuSubItem>
+                                            )
+                                        })
                                     ) : (
                                         <div className="text-[11px] text-muted-foreground/60 py-1 pl-2.5 italic">
                                             No active views
@@ -107,7 +124,7 @@ export function NavProjects({
 
                 {/* Add new project */}
                 <SidebarMenuItem>
-                    <SidebarMenuButton 
+                    <SidebarMenuButton
                         className="text-muted-foreground/80 hover:text-foreground mt-1"
                         render={
                             <button className="flex items-center gap-2 w-full">
@@ -121,4 +138,3 @@ export function NavProjects({
         </SidebarGroup>
     )
 }
-
