@@ -3,7 +3,6 @@
 import * as React from "react"
 import {
     LayoutDashboard,
-    Bell,
     Zap,
     BarChart3,
     Users,
@@ -12,11 +11,14 @@ import {
     ListTodo,
     Timer,
     UserCircle,
+    MailOpen,
 } from "lucide-react"
 
 import { NavMain } from "./nav-main"
 import { NavProjects } from "./nav-projects"
 import { NavUser } from "./nav-user"
+import { FlowOSIcon } from "@/components/ui/logo"
+import { useDashboardNav } from "./dashboard-nav-context"
 import {
     Sidebar,
     SidebarContent,
@@ -28,39 +30,6 @@ import {
 } from "@/components/ui/sidebar"
 
 const data = {
-    user: {
-        name: "Arjun Sharma",
-        email: "arjun@flowos.dev",
-        avatar: "",
-        role: "Admin",
-    },
-    navMain: [
-        {
-            title: "Dashboard",
-            url: "#",
-            icon: LayoutDashboard,
-            isActive: true,
-            navAction: "dashboard" as const,
-        },
-        {
-            title: "Notifications",
-            url: "#",
-            icon: Bell,
-            badge: "4",
-        },
-    ],
-    navViews: [
-        {
-            title: "Team",
-            url: "#",
-            icon: Users,
-        },
-        {
-            title: "Settings",
-            url: "#",
-            icon: Settings,
-        },
-    ],
     projects: [
         {
             name: "E-Commerce",
@@ -71,7 +40,6 @@ const data = {
             items: [
                 { title: "Board", url: "#", icon: Kanban, isActive: false, viewType: "board" as const },
                 { title: "Backlog", url: "#", icon: ListTodo, isActive: false, viewType: "backlog" as const },
-                { title: "Sprints", url: "#", icon: Timer },
                 { title: "Members", url: "#", icon: UserCircle, viewType: "members" as const },
                 { title: "Analytics", url: "#", icon: BarChart3, viewType: "analytics" as const },
             ],
@@ -108,6 +76,45 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    const { currentUser, invitations } = useDashboardNav()
+
+    const pendingCount = invitations.filter(inv => inv.status === "pending").length
+
+    const navMainItems = [
+        {
+            title: "Dashboard",
+            url: "#",
+            icon: LayoutDashboard,
+            viewType: "dashboard" as const,
+        },
+        ...(currentUser.role !== "Admin"
+            ? [
+                {
+                    title: "Invitation",
+                    url: "#",
+                    icon: MailOpen,
+                    badge: pendingCount > 0 ? String(pendingCount) : undefined,
+                    viewType: "invitations" as const,
+                },
+            ]
+            : []),
+    ]
+
+    const navViewsItems = [
+        {
+            title: "Team",
+            url: "#",
+            icon: Users,
+            viewType: "team" as const,
+        },
+        {
+            title: "Settings",
+            url: "#",
+            icon: Settings,
+            viewType: "settings" as const,
+        },
+    ]
+
     return (
         <Sidebar variant="inset" collapsible="icon" {...props}>
             <SidebarHeader>
@@ -115,9 +122,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <a href="#" className="flex items-center gap-2">
-                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                                    <Zap className="size-4" />
-                                </div>
+                                <FlowOSIcon className="size-8 flex-shrink-0" />
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <span className="truncate font-semibold">FlowOS</span>
                                     <span className="truncate text-xs text-muted-foreground">Beta</span>
@@ -128,12 +133,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </SidebarMenu>
             </SidebarHeader>
             <SidebarContent>
-                <NavMain items={data.navMain} label="Workspace" />
+                <NavMain items={navMainItems} label="Workspace" />
                 <NavProjects projects={data.projects} />
-                <NavMain items={data.navViews} label="Views" />
+                <NavMain items={navViewsItems} label="Views" />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={data.user} />
+                <NavUser user={currentUser} />
             </SidebarFooter>
         </Sidebar>
     )

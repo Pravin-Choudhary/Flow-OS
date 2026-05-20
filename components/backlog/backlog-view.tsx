@@ -33,6 +33,7 @@ import {
 } from "lucide-react"
 import { PROJECT_BACKLOGS, type BacklogTask } from "./backlog-data"
 import { cn } from "@/lib/utils"
+import { useDashboardNav } from "@/components/dasboard/dashboard-nav-context"
 
 interface BacklogViewProps {
     projectId: string
@@ -40,6 +41,7 @@ interface BacklogViewProps {
 
 export function BacklogView({ projectId }: BacklogViewProps) {
     const projectData = PROJECT_BACKLOGS[projectId] ?? PROJECT_BACKLOGS["ecommerce"]
+    const { setIsNewTaskOpen } = useDashboardNav()
 
     const [tasks, setTasks] = useState<BacklogTask[]>(projectData.tasks)
     const [selectedTask, setSelectedTask] = useState<BacklogTask | null>(null)
@@ -191,7 +193,7 @@ export function BacklogView({ projectId }: BacklogViewProps) {
                         <Filter className="size-3.5" />
                         Filter
                     </Button>
-                    <Button size="sm" className="h-8 text-xs gap-1.5" onClick={handleAddTask}>
+                    <Button size="sm" className="h-8 text-xs gap-1.5 cursor-pointer" onClick={() => setIsNewTaskOpen(true)}>
                         <Plus className="size-3.5" />
                         Add Task
                     </Button>

@@ -42,7 +42,7 @@ export function NavProjects({
     projects: Project[]
 }) {
     const [projects, setProjects] = useState(initialProjects)
-    const { navigateToBoard, navigateToBacklog, navigateToMembers, navigateToAnalytics, activeView, activeProjectId } = useDashboardNav()
+    const { navigateToBoard, navigateToBacklog, navigateToMembers, navigateToAnalytics, activeView, activeProjectId, setIsNewProjectOpen, currentUser } = useDashboardNav()
 
     const toggleProject = (index: number) => {
         setProjects((prev) =>
@@ -130,18 +130,18 @@ export function NavProjects({
                     </Collapsible>
                 ))}
 
-                {/* Add new project */}
-                <SidebarMenuItem>
-                    <SidebarMenuButton
-                        className="text-muted-foreground/80 hover:text-foreground mt-1"
-                        render={
-                            <button className="flex items-center gap-2 w-full">
-                                <Plus className="size-4" />
-                                <span className="text-xs">New project</span>
-                            </button>
-                        }
-                    />
-                </SidebarMenuItem>
+                {/* Add new project — Admin only */}
+                {currentUser.role === "Admin" && (
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
+                            className="text-muted-foreground/80 hover:text-foreground mt-1 cursor-pointer"
+                            onClick={() => setIsNewProjectOpen(true)}
+                        >
+                            <Plus className="size-4" />
+                            <span className="text-xs">New project</span>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                )}
             </SidebarMenu>
         </SidebarGroup>
     )

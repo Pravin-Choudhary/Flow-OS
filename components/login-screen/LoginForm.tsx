@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useRouter } from "next/navigation"
 
 interface LoginFormProps {
     onSwitchMode: () => void
@@ -13,12 +14,14 @@ interface LoginFormProps {
 
 export function LoginForm({ onSwitchMode }: LoginFormProps) {
     const [isLoading, setIsLoading] = useState(false)
+    const router = useRouter()
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setIsLoading(true)
         await new Promise((resolve) => setTimeout(resolve, 1000))
         setIsLoading(false)
+        router.push("/dashboard")
     }
 
     return (

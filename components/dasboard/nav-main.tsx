@@ -9,7 +9,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useDashboardNav } from "./dashboard-nav-context"
+import { useDashboardNav, type ActiveView } from "./dashboard-nav-context"
 
 export function NavMain({
     items,
@@ -20,9 +20,8 @@ export function NavMain({
         title: string
         url: string
         icon: LucideIcon
-        isActive?: boolean
         badge?: string
-        navAction?: "dashboard" | "board"
+        viewType: ActiveView
     }[]
     label?: string
     className?: string
@@ -34,10 +33,7 @@ export function NavMain({
             {label && <SidebarGroupLabel>{label}</SidebarGroupLabel>}
             <SidebarMenu>
                 {items.map((item) => {
-                    const isActive =
-                        item.navAction === "dashboard"
-                            ? activeView === "dashboard"
-                            : item.isActive
+                    const isActive = activeView === item.viewType
 
                     return (
                         <SidebarMenuItem key={item.title}>
@@ -46,11 +42,9 @@ export function NavMain({
                                 tooltip={item.title}
                                 render={
                                     <button
-                                        className="relative flex w-full items-center gap-2"
+                                        className="relative flex w-full items-center gap-2 cursor-pointer"
                                         onClick={() => {
-                                            if (item.navAction === "dashboard") {
-                                                setActiveView("dashboard")
-                                            }
+                                            setActiveView(item.viewType)
                                         }}
                                     >
                                         <item.icon className="size-4" />

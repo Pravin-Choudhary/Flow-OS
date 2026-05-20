@@ -23,6 +23,10 @@ import { KanbanBoardView } from "@/components/kanban/kanban-board"
 import { BacklogView } from "@/components/backlog/backlog-view"
 import { MembersView } from "@/components/members/members-view"
 import { AnalyticsView } from "@/components/analytics/analytics-view"
+import { TeamView } from "@/components/dasboard/team-view"
+import { SettingsView } from "@/components/dasboard/settings-view"
+import { InvitationsView } from "@/components/dasboard/invitations-view"
+import { GlobalForms } from "@/components/dasboard/global-forms"
 
 // ─── Inner content that consumes the nav context ───
 function DashboardPageInner() {
@@ -37,7 +41,13 @@ function DashboardPageInner() {
                     ? "Members"
                     : activeView === "analytics"
                         ? "Analytics"
-                        : "Dashboard"
+                        : activeView === "team"
+                            ? "Team"
+                            : activeView === "settings"
+                                ? "Settings"
+                                : activeView === "invitations"
+                                    ? "Invitation"
+                                    : "Dashboard"
 
     return (
         <SidebarProvider>
@@ -74,6 +84,12 @@ function DashboardPageInner() {
                         <MembersView key={activeProjectId} projectId={activeProjectId} />
                     ) : activeView === "analytics" ? (
                         <AnalyticsView key={activeProjectId} projectId={activeProjectId} />
+                    ) : activeView === "team" ? (
+                        <TeamView />
+                    ) : activeView === "settings" ? (
+                        <SettingsView />
+                    ) : activeView === "invitations" ? (
+                        <InvitationsView />
                     ) : (
                         <DashboardContent />
                     )}
@@ -88,6 +104,7 @@ export default function DashboardPage() {
     return (
         <DashboardNavProvider>
             <DashboardPageInner />
+            <GlobalForms />
         </DashboardNavProvider>
     )
 }

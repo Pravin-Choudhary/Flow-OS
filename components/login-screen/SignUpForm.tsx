@@ -5,6 +5,7 @@ import { ArrowRight, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useRouter } from "next/navigation"
 import {
     Select,
     SelectContent,
@@ -19,12 +20,14 @@ interface SignUpFormProps {
 
 export function SignUpForm({ onSwitchMode }: SignUpFormProps) {
     const [isLoading, setIsLoading] = useState(false)
+    const router = useRouter()
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setIsLoading(true)
         await new Promise((resolve) => setTimeout(resolve, 1000))
         setIsLoading(false)
+        router.push("/dashboard")
     }
 
     return (

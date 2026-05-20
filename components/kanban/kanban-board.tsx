@@ -13,6 +13,7 @@ import { PROJECT_BOARDS } from "./kanban-data"
 import { cn } from "@/lib/utils"
 import { Plus, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useDashboardNav } from "@/components/dasboard/dashboard-nav-context"
 
 interface KanbanBoardViewProps {
     projectId: string
@@ -20,6 +21,7 @@ interface KanbanBoardViewProps {
 
 export function KanbanBoardView({ projectId }: KanbanBoardViewProps) {
     const projectData = PROJECT_BOARDS[projectId] ?? PROJECT_BOARDS["ecommerce"]
+    const { setIsNewTaskOpen } = useDashboardNav()
 
     const [columns, setColumns] = useState<Record<string, KanbanTask[]>>(
         projectData.columns
@@ -56,7 +58,7 @@ export function KanbanBoardView({ projectId }: KanbanBoardViewProps) {
                         <Zap className="size-3.5 text-muted-foreground" />
                         Sprint Actions
                     </Button>
-                    <Button size="sm" className="gap-1.5 text-xs h-8">
+                    <Button size="sm" className="gap-1.5 text-xs h-8 cursor-pointer" onClick={() => setIsNewTaskOpen(true)}>
                         <Plus className="size-3.5" />
                         Add Task
                     </Button>
