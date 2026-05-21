@@ -26,13 +26,13 @@ The app covers the full cycle of creating and working in a team workspace.
 - **Member management** — invite by link, view members, change roles (admin and owner only)
 - **Protected routes** — unauthenticated users are redirected to login; certain UI actions are hidden or disabled based on the user's role in the current workspace
 
-![Login screen](./assets/login.png)
+![Login screen](./assests/login.png)
 
-![Dashboard view](./assets/dashboard.png)
+![Dashboard view](./assests/dashboard.png)
 
-![Task table](./assets/tasks.png)
+![Task table](./assests/tasks.png)
 
-![Project create/update modal](./assets/project.png)
+![Project create/update modal](./assests/projects.png)
 
 ---
 
@@ -105,8 +105,8 @@ VITE_API_BASE_URL=http://localhost:8000/api
 The live deployment has a demo account pre-seeded with sample data.
 
 ```
-Email:    demo@flow-os.dev
-Password: FlowOS#2024
+Email:    pravinchoudhary.aesxa29@gmail.com
+Password: 12345678
 ```
 
 These credentials are pre-seeded in the database with sample data. No setup needed beyond the steps above.
