@@ -22,11 +22,16 @@ import taskRoutes from "./routes/task.route";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
+const isProduction = config.NODE_ENV === "production";
+
+// Trust Render's proxy so secure cookies work correctly
+if (isProduction) {
+  app.set("trust proxy", 1);
+}
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Allow comma-separated list of origins from env, e.g. "https://foo.vercel.app,http://localhost:5173"
 const allowedOrigins = config.FRONTEND_ORIGIN
   .split(",")
   .map((o) => o.trim())
@@ -35,7 +40,6 @@ const allowedOrigins = config.FRONTEND_ORIGIN
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
@@ -51,9 +55,9 @@ app.use(
     name: "session",
     keys: [config.SESSION_SECRET],
     maxAge: 24 * 60 * 60 * 1000,
-    secure: config.NODE_ENV === "production",
+    secure: isProduction,
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: isProduction ? "none" : "lax",
   })
 );
 
