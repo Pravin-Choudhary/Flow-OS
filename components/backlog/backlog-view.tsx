@@ -146,37 +146,6 @@ export function BacklogView({ projectId }: BacklogViewProps) {
         }
     }
 
-    // Add Task helper
-    const handleAddTask = () => {
-        const newTaskId = `eco-bl-${Date.now()}`
-        const nextFlowNum = tasks.length > 0 
-            ? Math.max(...tasks.map(t => parseInt(t.flowId.replace("FLOW-", "")))) + 1 
-            : 50
-        const flowIdStr = `FLOW-${String(nextFlowNum).padStart(3, "0")}`
-
-        const newTask: BacklogTask = {
-            id: newTaskId,
-            flowId: flowIdStr,
-            title: "New unplanned backlog item",
-            priority: "medium",
-            assigneeName: "Arjun Sharma",
-            assigneeInitials: "AS",
-            assigneeColor: "bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200/80 dark:border-zinc-700/85",
-            points: 3,
-            status: "Backlog",
-            sprint: "Sprint 4",
-            dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            createdDate: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-            labels: ["Sprint Backlog"],
-            description: "Describe the requirements, edge cases, and engineering guidelines here.",
-            subtasks: [
-                { id: "s1", title: "Refined requirements checklist", completed: false }
-            ],
-            activities: []
-        }
-
-        setTasks([...tasks, newTask])
-    }
 
     return (
         <div className="flex flex-col gap-6 p-5 md:p-6 min-h-full">

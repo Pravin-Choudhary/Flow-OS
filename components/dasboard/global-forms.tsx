@@ -103,11 +103,11 @@ function DatePicker({
     const [open, setOpen] = React.useState(false)
     const [rect, setRect] = React.useState<{ top: number; left: number; width: number } | null>(null)
     const btnRef = React.useRef<HTMLButtonElement>(null)
-    const [mounted, setMounted] = React.useState(false)
-
-    React.useEffect(() => {
-        setMounted(true)
-    }, [])
+    const mounted = React.useSyncExternalStore(
+        () => () => {},
+        () => true,
+        () => false
+    )
 
     // Recalculate position on scroll / resize while open
     React.useEffect(() => {

@@ -3,7 +3,6 @@
 import * as React from "react"
 import {
     LayoutDashboard,
-    Zap,
     BarChart3,
     Users,
     Settings,
