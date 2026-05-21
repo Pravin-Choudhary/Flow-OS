@@ -21,7 +21,7 @@ if (config.GOOGLE_CLIENT_ID && config.GOOGLE_CLIENT_SECRET) {
         scope: ["profile", "email"],
         passReqToCallback: true,
       },
-      async (req: Request, accessToken, refreshToken, profile, done) => {
+      async (req: Request, accessToken: string, refreshToken: string, profile: any, done: any) => {
         try {
           const { email, sub: googleId, picture } = profile._json;
           console.log(profile, "profile");
@@ -58,7 +58,7 @@ passport.use(
       passwordField: "password",
       session: true,
     },
-    async (email, password, done) => {
+    async (email: string, password: string, done: any) => {
       try {
         const user = await verifyUserService({ email, password });
         return done(null, user);

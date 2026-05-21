@@ -1,4 +1,4 @@
-import { ErrorRequestHandler, Response } from "express";
+import { ErrorRequestHandler, Request, Response, NextFunction } from "express";
 import { HTTPSTATUS } from "../config/http.config";
 import { AppError } from "../utils/appError";
 import { z, ZodError } from "zod";
@@ -17,10 +17,10 @@ const formatZodError = (res: Response, error: z.ZodError) => {
 };
 
 export const errorHandler: ErrorRequestHandler = (
-  error,
-  req,
-  res,
-  next
+  error: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
 ): any => {
   console.error(`Error Occured on PATH: ${req.path} `, error);
 

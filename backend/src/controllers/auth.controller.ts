@@ -55,7 +55,7 @@ export const loginController = asyncHandler(
           });
         }
 
-        req.logIn(user, (err) => {
+        req.logIn(user, (err: any) => {
           if (err) {
             return next(err);
           }
@@ -72,7 +72,7 @@ export const loginController = asyncHandler(
 
 export const logOutController = asyncHandler(
   async (req: Request, res: Response) => {
-    req.logout((err) => {
+    req.logout((err: any) => {
       if (err) {
         console.error("Logout error:", err);
         return res

@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import passport from "passport";
 import { config } from "../config/app.config";
 import { HTTPSTATUS } from "../config/http.config";
@@ -20,7 +20,7 @@ authRoutes.post("/logout", logOutController);
 
 authRoutes.get(
   "/google",
-  (req, res, next) => {
+  (req: Request, res: Response, next: NextFunction) => {
     if (!config.GOOGLE_CLIENT_ID || !config.GOOGLE_CLIENT_SECRET) {
       res.status(HTTPSTATUS.BAD_REQUEST).json({
         message: "Google OAuth is not configured on this server.",
@@ -36,7 +36,7 @@ authRoutes.get(
 
 authRoutes.get(
   "/google/callback",
-  (req, res, next) => {
+  (req: Request, res: Response, next: NextFunction) => {
     if (!config.GOOGLE_CLIENT_ID || !config.GOOGLE_CLIENT_SECRET) {
       res.status(HTTPSTATUS.BAD_REQUEST).json({
         message: "Google OAuth is not configured on this server.",
