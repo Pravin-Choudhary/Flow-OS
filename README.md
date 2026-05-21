@@ -26,11 +26,13 @@ The app covers the full cycle of creating and working in a team workspace.
 - **Member management** — invite by link, view members, change roles (admin and owner only)
 - **Protected routes** — unauthenticated users are redirected to login; certain UI actions are hidden or disabled based on the user's role in the current workspace
 
-![Login screen](./assets/screenshots/login.png)
+![Login screen](./assets/login.png)
 
-![Dashboard view](./assets/screenshots/dashboard.png)
+![Dashboard view](./assets/dashboard.png)
 
-![Task table](./assets/screenshots/tasks.png)
+![Task table](./assets/tasks.png)
+
+![Project create/update modal](./assets/project.png)
 
 ---
 
