@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                 String     @id @default(uuid())
+  name               String?
+  email              String     @unique
+  password           String?
+  profilePicture     String?
+  currentWorkspaceId String?
+  isActive           Boolean    @default(true)
+  lastLogin          DateTime?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  // Relationships
+  currentWorkspace   Workspace? @relation("UserCurrentWorkspace", fields: [currentWorkspaceId], references: [id], onDelete: SetNull)
+  ownedWorkspaces    Workspace[] @relation("WorkspaceOwner")
+  memberships        Member[]
+  createdProjects    Project[]
+  assignedTasks      Task[]     @relation("TaskAssignedTo")
+  createdTasks       Task[]     @relation("TaskCreatedBy")
+  accounts           Account[]
+}
+
+model Account {
+  id           String    @id @default(uuid())
+  userId       String
+  provider     String
+  providerId   String    @unique
+  refreshToken String?
+  tokenExpiry  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relationships
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Workspace {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  ownerId     String
+  inviteCode  String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  owner       User     @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members     Member[]
+  projects    Project[]
+  tasks       Task[]
+
+  // Track users currently active in this workspace
+  usersActiveHere User[]   @relation("UserCurrentWorkspace")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  permissions String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  members     Member[]
+}
+
+model Member {
+  id          String   @id @default(uuid())
+  userId      String
+  workspaceId String
+  roleId      String
+  joinedAt    DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  role        Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  name        String
+  emoji       String   @default("📊")
+  description String?
+  workspaceId String
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  tasks       Task[]
+}
+
+model Task {
+  id           String    @id @default(uuid())
+  taskCode     String    @unique
+  title        String
+  description  String?
+  projectId    String
+  workspaceId  String
+  status       String    @default("TODO")
+  priority     String    @default("MEDIUM")
+  assignedToId String?
+  createdById  String
+  dueDate      DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relationships
+  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  assignedTo   User?     @relation("TaskAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+  createdBy    User      @relation("TaskCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+}
