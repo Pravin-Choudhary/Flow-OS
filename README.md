@@ -1,37 +1,46 @@
-# Flooist
+# Flow-OS
 
-![Version](https://img.shields.io/badge/version-0.1.0-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Build](https://img.shields.io/badge/build-passing-brightgreen) ![Stage](https://img.shields.io/badge/stage-beta-orange)
+A project management tool with workspaces, role-based access, and task tracking — built as a take-home assessment.
 
-Flooist is a team task management app built for small teams who are tired of paying $20/seat for tools that do too much and explain too little. You get workspaces, projects, tasks with priorities and statuses, member roles, and an invite system — nothing more, nothing less. It started as a side project to scratch a real itch and grew into something actually usable. The stack is a React + Vite frontend, an Express + Prisma backend, and PostgreSQL on Neon. No magic, no vendor lock-in.
+![Assessment Submission](https://img.shields.io/badge/type-assessment%20submission-blueviolet) ![React](https://img.shields.io/badge/frontend-React%2018%20%2B%20Vite-61DAFB) ![Express](https://img.shields.io/badge/backend-Express%20%2B%20TypeScript-green) ![PostgreSQL](https://img.shields.io/badge/db-PostgreSQL%20%28Neon%29-336791) ![Prisma](https://img.shields.io/badge/ORM-Prisma%207-2D3748)
 
 ---
 
-## What it does
+## Overview
 
-Flooist lets you create workspaces and invite your team with a link. Inside each workspace you organize work into projects, and inside each project you create tasks with statuses (`TODO`, `IN_PROGRESS`, `IN_REVIEW`, `DONE`) and priorities (`LOW`, `MEDIUM`, `HIGH`, `URGENT`). Roles are enforced — an `OWNER` can do everything, an `ADMIN` can manage members and projects, a `MEMBER` can only work on tasks. The permission model isn't bolted on as an afterthought — it's baked into every API endpoint via a role guard that checks permissions before anything touches the database.
+The task was to build a project management application where users can organize work across multiple teams. I interpreted this as needing: multi-tenant workspaces, projects inside those workspaces, tasks with status/priority tracking, and a member system with enforced permissions. Rather than building a wide feature set shallowly, I focused on getting the core data model and permission system right — a workspace that works correctly across owners, admins, and members tells you more about architectural thinking than a wider but thinner feature list. Authentication covers both email/password and Google OAuth. The app is deployed — backend on Render, frontend on Vercel — so you can evaluate it running live without any local setup.
 
-![Dashboard preview](./assets/screenshots/dashboard.png)
+---
 
-You can also sign in with Google. The OAuth flow stores a linked account record separately from the user, so the same email can eventually log in via multiple providers without collision.
+## What's included
+
+The app covers the full cycle of creating and working in a team workspace.
+
+- **Authentication** — email/password login and registration, Google OAuth via Passport.js, session-based auth using `cookie-session`
+- **Workspaces** — create a workspace, invite members via a unique link, switch between multiple workspaces
+- **Role-based access** — three roles: `OWNER`, `ADMIN`, `MEMBER`, each with a defined set of permissions enforced at the API layer
+- **Projects** — create projects inside a workspace with a name, optional description, and an emoji picker
+- **Tasks** — full CRUD on tasks with status (`BACKLOG` / `TODO` / `IN_PROGRESS` / `IN_REVIEW` / `DONE`), priority (`LOW` / `MEDIUM` / `HIGH` / `URGENT`), assignee, due date, and an auto-generated task code (e.g. `PROJ-14`)
+- **Task table** — filterable, sortable table view with column-level controls for status and priority
+- **Workspace analytics** — counts of total tasks, completed tasks, and overdue tasks at both workspace and project level
+- **Member management** — invite by link, view members, change roles (admin and owner only)
+- **Protected routes** — unauthenticated users are redirected to login; certain UI actions are hidden or disabled based on the user's role in the current workspace
+
+![Login screen](./assets/screenshots/login.png)
+
+![Dashboard view](./assets/screenshots/dashboard.png)
+
+![Task table](./assets/screenshots/tasks.png)
 
 ---
 
 ## Getting started
 
-### Prerequisites
-
-- Node.js `>=20.x` (tested on 20 and 22 — haven't tried 18, your mileage may vary)
-- `npm` — the project doesn't use workspaces so you can use either npm or pnpm in each directory independently
-- A [Neon](https://neon.tech) PostgreSQL database (free tier works fine)
-- A Google OAuth client ID and secret if you want Google login — it gracefully degrades if those aren't set
-
-### Clone and install
-
-The repo is a monorepo-style folder with `client/` and `backend/` as independent apps. You need to install both separately.
+Requires Node `>=20`. Both directories (`client/` and `backend/`) are independent — install and run them separately.
 
 ```bash
-git clone https://github.com/Pravin-Choudhary/Flow-OS.git flooist
-cd flooist
+git clone https://github.com/Pravin-Choudhary/Flow-OS.git
+cd Flow-OS
 ```
 
 **Backend:**
@@ -39,7 +48,8 @@ cd flooist
 ```bash
 cd backend
 npm install
-npx prisma generate
+npx prisma db push    # applies the schema to your database
+npm run seed          # seeds the three required roles (OWNER, ADMIN, MEMBER)
 npm run dev
 ```
 
@@ -51,31 +61,33 @@ npm install
 npm run dev
 ```
 
-The client runs on `http://localhost:5173` and the backend on `http://localhost:8000`.
+The client runs on `http://localhost:5173`, the backend on `http://localhost:8000`.
 
 ### Environment variables
 
-**`backend/.env`** — copy this and fill in your values:
+**`backend/.env`:**
 
 ```env
 PORT=8000
 NODE_ENV=development
 BASE_PATH=/api
 
-# Neon PostgreSQL — pooled connection for app, direct for Prisma CLI
+# Neon PostgreSQL (or any PostgreSQL instance)
+# Pooled connection for the app runtime:
 DATABASE_URL="postgresql://user:password@ep-xxx-pooler.region.aws.neon.tech/dbname?sslmode=require"
+# Direct connection for Prisma CLI migrations:
 DIRECT_URL="postgresql://user:password@ep-xxx.region.aws.neon.tech/dbname?sslmode=require"
 
 # Session
-SESSION_SECRET=pick-something-long-and-random
+SESSION_SECRET=any-long-random-string-here
 SESSION_EXPIRES_IN=1d
 
-# Google OAuth (optional — comment out to disable Google login)
-GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+# Google OAuth — comment out both to disable Google login gracefully
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=GOCSPX-your-secret
 GOOGLE_CALLBACK_URL=http://localhost:8000/api/auth/google/callback
 
-# Frontend
+# Frontend origin (for CORS)
 FRONTEND_ORIGIN=http://localhost:5173
 FRONTEND_GOOGLE_CALLBACK_URL=http://localhost:5173/google/callback
 ```
@@ -86,154 +98,96 @@ FRONTEND_GOOGLE_CALLBACK_URL=http://localhost:5173/google/callback
 VITE_API_BASE_URL=http://localhost:8000/api
 ```
 
-### Seed the roles
+### Try it now
 
-The permission system requires three roles (`OWNER`, `ADMIN`, `MEMBER`) to exist in the database before anything works. Run the seeder once after your first migration:
+The live deployment has a demo account pre-seeded with sample data.
 
-```bash
-cd backend
-npx prisma db push
-npm run seed
+```
+Email:    demo@flow-os.dev
+Password: FlowOS#2024
 ```
 
-### Demo login
+These credentials are pre-seeded in the database with sample data. No setup needed beyond the steps above.
 
-You can try it out at the live deployment (link below) using these test credentials:
-
-- **Email:** `demo@flooist.dev`
-- **Password:** `flooist2024!`
-
-These are seeded test accounts with a workspace, a few projects, and a bunch of tasks pre-loaded so you can poke around without setting anything up first. Don't put anything sensitive in there.
+**Live URL:** `https://flow-os-ten-ochre.vercel.app`
 
 ---
 
-## Project structure
+## How it's organized
 
 ```
-flooist/
-├── client/                  # Vite + React frontend
+Flow-OS/
+├── client/                  # Vite + React 18 frontend
 │   ├── src/
 │   │   ├── components/      # UI primitives (shadcn/ui) and feature components
-│   │   ├── context/         # Auth context, React Query provider
-│   │   ├── hoc/             # withPermission HOC for role-gated UI
-│   │   ├── hooks/           # Custom hooks — API calls live in hooks/api/
-│   │   ├── layout/          # App shell layout and base layout wrapper
-│   │   ├── lib/             # Axios client, API helpers, utility functions
-│   │   ├── page/            # Page components organised by route section
-│   │   ├── routes/          # React Router route definitions and guards
-│   │   └── types/           # TypeScript types shared across the frontend
-│   ├── .env                 # Local env (VITE_API_BASE_URL)
-│   └── vite.config.ts       # Vite config
+│   │   ├── context/         # Auth context and React Query provider
+│   │   ├── hoc/             # withPermission HOC — role-gated UI wrapper
+│   │   ├── hooks/           # Custom hooks; API calls live in hooks/api/
+│   │   ├── layout/          # App shell and base layout wrapper
+│   │   ├── lib/             # Axios client, API helpers, utils
+│   │   ├── page/            # Page components grouped by route section
+│   │   ├── routes/          # React Router definitions and auth guards
+│   │   └── types/           # TypeScript types shared across the app
+│   └── vite.config.ts
 │
-├── backend/                 # Express + Prisma API server
+├── backend/                 # Express + TypeScript API
 │   ├── src/
-│   │   ├── config/          # App config, DB connection, Passport setup, HTTP status codes
-│   │   ├── controllers/     # Request handlers — thin, just parsing and calling services
+│   │   ├── config/          # App config, DB connection, Passport, HTTP codes
+│   │   ├── controllers/     # Request parsing — thin, delegates to services
 │   │   ├── db.ts            # Prisma client singleton with Neon adapter
-│   │   ├── enums/           # Shared enums for roles, task status, task priority, providers
-│   │   ├── middlewares/     # Auth check, error handler, async wrapper
-│   │   ├── routes/          # Express routers, one file per resource
-│   │   ├── services/        # All actual business logic lives here
-│   │   ├── utils/           # Bcrypt helpers, error classes, env loader, UUID generator
-│   │   └── validation/      # Zod schemas for request bodies
+│   │   ├── enums/           # Role, task status, task priority, provider enums
+│   │   ├── middlewares/     # isAuthenticated, errorHandler, asyncHandler
+│   │   ├── routes/          # Express routers — one file per resource
+│   │   ├── services/        # Business logic — all writes go through here
+│   │   ├── utils/           # Error classes, bcrypt helpers, env loader, UUID
+│   │   └── validation/      # Zod schemas for all incoming request bodies
 │   ├── prisma/
-│   │   └── schema.prisma    # Database schema — User, Workspace, Project, Task, Member, Role
-│   ├── prisma.config.ts     # Prisma v7 config file (schema path + datasource URL)
-│   └── package.json
+│   │   └── schema.prisma    # Data model — User, Workspace, Project, Task, Member, Role
+│   └── prisma.config.ts     # Prisma v7 config (schema path + datasource)
 │
 └── README.md
 ```
 
 ---
 
-## How it works
+## A few decisions worth noting
 
-### Authentication
+**Session-based auth instead of JWTs.** I chose `cookie-session` with Passport.js over a JWT approach because it's simpler to reason about for server-rendered role checks — there's no token refresh logic, no client-side token storage problem, and revocation is straightforward. The trade-off is that it doesn't work well horizontally without sticky sessions or a shared session store. For a single-instance deployment (which this is), it's fine.
 
-Auth is session-based using `cookie-session` and Passport.js. When a user logs in (email/password or Google OAuth), Passport validates the credentials, serializes the user object into the session cookie, and from that point on every request reads the session off the cookie. In production, the cookie is set with `sameSite: "none"` and `secure: true` so it crosses the Vercel → Render domain boundary correctly.
+**Prisma v7 with the Neon serverless adapter.** Neon's connection pooling is built for serverless environments and the `@prisma/adapter-neon` driver lets Prisma speak directly to it over WebSockets instead of standard TCP. This saved me from dealing with connection limit issues on the free tier. The version mismatch between Prisma CLI (6.x) and the client (7.x) caused build failures when deploying — I'd document that pairing issue more clearly if I were starting again, and I'd pin both to the same version from the start.
 
-Google OAuth goes through a standard redirect flow — the user hits `/api/auth/google`, gets sent to Google's consent screen, and Google redirects back to `/api/auth/google/callback`. At that point Passport either links the Google account to an existing user (matched by email) or creates a new user and a default workspace for them.
+**Role checks in the service layer, not middleware.** Permission enforcement lives inside each service function via a `roleGuard` utility rather than in route middleware. This was a deliberate choice — it keeps the business rule close to the operation it protects, and it's harder to accidentally bypass when adding new routes. The downside is some repetition across service files. Middleware-level guards would be cleaner for route-wide patterns, but they make it easier to ship a route that forgets to add the guard.
 
-### Workspaces and membership
+**Typed error classes instead of generic Error throws.** I built a small hierarchy (`AppError` → `NotFoundException`, `BadRequestException`, `UnauthorizedException`) that carries an HTTP status code and a typed error code enum. The central `errorHandler` middleware reads those and formats the response consistently. This made client-side error handling much simpler — the frontend can check `error.errorCode` for specific cases rather than parsing messages.
 
-Every user gets a personal workspace created automatically on sign-up. To add team members, the workspace owner shares an invite link generated from a unique code. When someone visits the invite URL and accepts, a `Member` record is created with a default `MEMBER` role. Roles can be changed later by anyone with `CHANGE_MEMBER_ROLE` permission (admins and owners).
+**No monorepo tooling.** `client/` and `backend/` are two independent npm projects. I considered using Turborepo or pnpm workspaces but decided against adding that complexity for a two-package project. It means two separate `npm install` steps, but nothing else is affected.
 
-```
-User signs up
-  └─> Workspace created (ownerId = user.id)
-  └─> Member record created (role = OWNER)
-  └─> user.currentWorkspaceId set to new workspace
-```
-
-### Tasks and permissions
-
-Tasks belong to a project, which belongs to a workspace. Every write operation (create, edit, delete) first checks whether the calling user has the required permission for their role in that workspace. This check happens in a `roleGuard` utility that's called at the top of each service function — before any database write. If the check fails, it throws a `403` and nothing gets written.
-
-The task model tracks status (`BACKLOG` → `TODO` → `IN_PROGRESS` → `IN_REVIEW` → `DONE`) and priority (`LOW` / `MEDIUM` / `HIGH` / `URGENT`). Each task also has a `taskCode` (e.g. `PROJ-42`) that's unique across the workspace, generated at creation time.
-
-### Data flow (simplified)
-
-```
-Client (Vite/React)
-  │
-  │  axios + withCredentials: true
-  ▼
-Express API (Render)
-  │
-  ├── Passport.js (session auth)
-  ├── Zod validation (request body)
-  ├── Role guard (permission check)
-  │
-  ▼
-Prisma Client → Neon PostgreSQL (via @prisma/adapter-neon)
-```
-
-The frontend uses React Query for all server state. Each resource (workspaces, projects, tasks, members) has its own hook in `hooks/api/` that wraps an Axios call and handles loading/error states. Nothing exotic — just fetch, cache, invalidate on mutation.
+**`sameSite: "none"` for cross-origin session cookies.** The frontend and backend are deployed on different domains (Vercel and Render). Session cookies need `sameSite: "none"` + `secure: true` in production to cross that domain boundary. In development they use `sameSite: "lax"` which is safe on localhost. I also had to add `app.set("trust proxy", 1)` so Express correctly reads the `X-Forwarded-Proto` header from Render's proxy — without it, the cookies are marked insecure even over HTTPS and the browser refuses to send them.
 
 ---
 
-## Contributing
+## If I had more time
 
-Pull requests are genuinely welcome. The codebase is clean enough to navigate without a guide, but here's what's actually useful to know before you start.
+- **Email verification is missing.** Users can register with any email address and are immediately active. Server-side I'd add a `verifiedAt` field on the `User` model and a verification token flow before allowing login.
 
-**Things that would help most right now:** more robust error handling on the frontend (the error boundary situation is embarrassing), tests for the service layer, and better loading states in the task table when filters change.
+- **Invite links don't expire.** The current `inviteCode` on a workspace is permanent. There's no rotation, no per-invite role selection, and no way to revoke access without deleting the workspace. This would need a separate `Invitation` model with an `expiresAt` and a `usedAt` timestamp.
 
-**Things that aren't open for PRs yet:** the invite system is getting a rewrite to support expiring invite links and per-invite role assignment — hold off on touching `member.service.ts` until that's sorted.
+- **The task filter state resets on navigation.** `nuqs` (URL-based query state) is installed and partially wired, but filter state isn't fully persisted in the URL. If you filter by status and navigate to a task then back, the filter is gone.
 
-To get a PR merged, it needs to build cleanly (`npm run build` in `backend/`) and not break the existing API contract. There are no automated tests yet (I know, I know) so at minimum describe what you tested manually.
+- **No server-side pagination.** The task list fetches all tasks in a workspace and paginates on the client. This is fine at small scale but would need a proper `skip`/`take` API with total count before this could handle real data volumes.
 
-```bash
-# Type-check the backend
-cd backend && npm run build
-
-# Lint the frontend
-cd client && npm run lint
-```
-
-If you're adding a new feature that touches permissions, make sure it goes through the `roleGuard` in `src/utils/roleGuard.ts` — don't do your own ad-hoc checks inline.
+- **No tests.** I made a conscious call to skip testing given the time available and focus on getting the core features working correctly. If I were extending this, I'd start with integration tests on the service layer — specifically the permission checks and the transaction-wrapped operations like workspace creation and deletion.
 
 ---
 
-## Known issues / Roadmap
+## Tests
 
-- **Session persistence on Render free tier:** Render spins down idle services. When it wakes back up, in-memory session data is gone, so users get logged out unexpectedly. The fix is moving to a Redis-backed session store or switching to JWTs — that's coming, just not done yet.
-
-- **No email verification:** Users can register with any email address. There's no confirmation step. This is intentional for now (MVP friction) but will need to change before this can be used in any real production setting.
-
-- **Invite links don't expire:** Once you generate an invite code it's valid forever. There's no mechanism to rotate or revoke it short of deleting the workspace. This needs fixing before the invite system is actually safe.
-
-- **Task filtering resets on navigation:** If you filter the task table by assignee or status and then navigate away and back, the filters are gone. URL-based filter state (`nuqs`) is wired up but not fully plumbed through yet.
-
-- **Google OAuth requires manual Passport configuration:** If `GOOGLE_CLIENT_ID` or `GOOGLE_CLIENT_SECRET` aren't set, the Google strategy is skipped but the passport middleware still loads. If someone hits `/api/auth/google` in that state, it throws a 500 instead of a clear "not configured" message. It's on the list.
+There are no automated tests in the current submission. Given the time constraints, I prioritized building a complete working feature set over test coverage. If I were to add tests, I'd start with the service layer — specifically `workspace.service.ts` and the role guard utility, since those contain the most consequential logic (permission enforcement, transaction correctness). The controllers are thin enough that service-level tests would cover most meaningful behavior. On the frontend, I'd test the `withPermission` HOC and the auth context since those affect what UI is shown to which users.
 
 ---
 
 ## License
 
-MIT. Do what you want with it, just don't remove the license header.
+MIT
 
----
-
-## Acknowledgments
-
-The heavy lifting is done by a small number of libraries that genuinely made this possible: [Prisma](https://www.prisma.io/) for the ORM and schema workflow, [Neon](https://neon.tech) for serverless Postgres that actually works on a free tier, [shadcn/ui](https://ui.shadcn.com/) for the component primitives, [TanStack Query](https://tanstack.com/query) for server state, and [Passport.js](https://www.passportjs.org/) for auth strategies that don't require reinventing the wheel.
+Built as part of a take-home assessment for the assessment team. Not intended for production use.
